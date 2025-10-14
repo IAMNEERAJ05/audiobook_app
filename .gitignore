@@ -49,6 +49,12 @@ Thumbs.db
 *.m4a
 *.flac
 
+# Executable files (too large for GitHub)
+*.exe
+dist/
+build/
+installer/*.exe
+
 # Logs
 *.log
 
