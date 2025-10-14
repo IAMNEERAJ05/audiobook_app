@@ -1,7 +1,7 @@
 # home_window.py
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, 
-    QMessageBox, QLabel, QFrame, QSpacerItem, QSizePolicy
+    QMessageBox, QLabel, QFrame, QSpacerItem, QSizePolicy, QDialog
 )
 from PyQt5.QtCore import Qt, QPropertyAnimation, QEasingCurve, QRect
 from PyQt5.QtGui import QFont, QPixmap, QPalette, QLinearGradient, QPainter
@@ -123,31 +123,44 @@ class HomeWindow(QWidget):
     
     def manage_api_key(self):
         """Open API key management dialog."""
-        api_dialog = APIKeyDialog(self)
+        api_dialog = APIKeyDialog(self, is_first_run=False)
         
         def on_api_key_saved(api_key):
-            if api_key:
-                self.config_manager.set_api_key(api_key)
-                # Set environment variable for immediate use
-                import os
-                os.environ['GOOGLE_API_KEY'] = api_key
-                QMessageBox.information(
-                    self, 
-                    "API Key Updated", 
-                    "API key has been saved successfully!\nYou can now use all AI features."
-                )
-            else:
-                # User skipped, but mark setup as completed
-                self.config_manager.mark_setup_completed()
-                QMessageBox.information(
+            try:
+                if api_key:
+                    self.config_manager.set_api_key(api_key)
+                    # Set environment variable for immediate use
+                    import os
+                    os.environ['GOOGLE_API_KEY'] = api_key
+                    QMessageBox.information(
+                        self, 
+                        "API Key Updated", 
+                        "API key has been saved successfully!\nYou can now use all AI features."
+                    )
+                else:
+                    # User skipped, but mark setup as completed
+                    self.config_manager.mark_setup_completed()
+                    QMessageBox.information(
+                        self,
+                        "Setup Complete",
+                        "Setup completed without API key.\nYou can add it later using this button."
+                    )
+                self._update_api_status()
+            except Exception as e:
+                QMessageBox.critical(
                     self,
-                    "Setup Complete",
-                    "Setup completed without API key.\nYou can add it later using this button."
+                    "Error",
+                    f"Failed to save API key: {str(e)}"
                 )
-            self._update_api_status()
                 
         api_dialog.api_key_saved.connect(on_api_key_saved)
-        api_dialog.exec_()
+        result = api_dialog.exec_()
+        
+        # Ensure dialog is properly closed
+        if result == QDialog.Accepted:
+            pass  # Dialog closed normally
+        else:
+            pass  # Dialog was cancelled
     
     def _create_header(self):
         """Create the header section with title and description."""

@@ -8,7 +8,7 @@ import base64
 from pathlib import Path
 from PyQt5.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QLabel, 
                            QLineEdit, QPushButton, QMessageBox, QCheckBox)
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal, QTimer
 from PyQt5.QtGui import QFont, QIcon
 
 class APIKeyDialog(QDialog):
@@ -27,7 +27,7 @@ class APIKeyDialog(QDialog):
             
         self.setModal(True)
         self.setFixedSize(500, 300)
-        self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.Dialog)
+        self.setWindowFlags(Qt.Dialog | Qt.WindowTitleHint | Qt.WindowSystemMenuHint)
         
         # Set window icon (if available)
         try:
@@ -37,6 +37,10 @@ class APIKeyDialog(QDialog):
             
         self.setup_ui()
         self.load_existing_key()
+        
+        # Ensure proper cleanup
+        self.setAttribute(Qt.WA_DeleteOnClose, True)
+        self._signal_emitted = False
         
     def setup_ui(self):
         """Setup the user interface."""
@@ -236,14 +240,29 @@ class APIKeyDialog(QDialog):
             except:
                 pass
                 
-            QMessageBox.information(
+            # Emit signal first, then close dialog
+            self.api_key_saved.emit(api_key)
+            self._signal_emitted = True
+            
+            # Use QTimer to ensure dialog closes properly
+            QTimer.singleShot(100, self.accept)
+            
+        except Exception as e:
+            QMessageBox.critical(
                 self, 
-                "Setup Complete", 
-                "API key saved successfully!\nYou can now use all features of the Audiobook Generator."
+                "Error", 
+                f"Failed to save API key: {str(e)}"
             )
             
-            self.api_key_saved.emit(api_key)
-            self.accept()
+    def closeEvent(self, event):
+        """Handle close event to ensure proper cleanup."""
+        try:
+            # Emit signal if not already emitted
+            if not hasattr(self, '_signal_emitted'):
+                self.api_key_saved.emit("")
+            event.accept()
+        except Exception:
+            event.accept()
             
         except Exception as e:
             QMessageBox.critical(
@@ -280,5 +299,19 @@ class APIKeyDialog(QDialog):
             except:
                 pass
                 
+            # Emit signal first, then close dialog
             self.api_key_saved.emit("")
-            self.accept()
+            self._signal_emitted = True
+            
+            # Use QTimer to ensure dialog closes properly
+            QTimer.singleShot(100, self.accept)
+            
+    def closeEvent(self, event):
+        """Handle close event to ensure proper cleanup."""
+        try:
+            # Emit signal if not already emitted
+            if not hasattr(self, '_signal_emitted'):
+                self.api_key_saved.emit("")
+            event.accept()
+        except Exception:
+            event.accept()
