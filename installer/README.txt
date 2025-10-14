@@ -74,10 +74,16 @@ README.txt               # This file
 - Check that Windows Defender isn't blocking the file
 - Try running as administrator
 
+**First-time setup issues:**
+- If the app hangs during API key setup, close and restart it
+- The API key dialog should work smoothly on restart
+- You can always add/change your API key later using the "🔑 API Key" button
+
 **API Key issues:**
 - Verify your API key is correct
 - Check your internet connection
 - Ensure you have API quota remaining
+- Get a new API key if the current one isn't working
 
 **Audio generation problems:**
 - Check Windows audio settings
