@@ -10,9 +10,11 @@ import sys
 # Import windows
 from gui.processing_window import ProcessingWindow
 from gui.library_window import LibraryWindow
+from gui.api_key_dialog import APIKeyDialog
 
 # Import modern components
 from gui.components.buttons import ActionButton, ModernButton
+from backend.config_manager import ConfigManager
 
 class HomeWindow(QWidget):
     def __init__(self):
@@ -20,6 +22,7 @@ class HomeWindow(QWidget):
         self.setWindowTitle("📚 Audiobook Generator")
         self.setGeometry(100, 100, 600, 500)
         self.setMinimumSize(500, 400)
+        self.config_manager = ConfigManager()
         self.init_ui()
 
     def init_ui(self):
@@ -27,6 +30,10 @@ class HomeWindow(QWidget):
         main_layout = QVBoxLayout()
         main_layout.setSpacing(20)
         main_layout.setContentsMargins(40, 40, 40, 40)
+        
+        # Top bar with API key button
+        top_bar = self._create_top_bar()
+        main_layout.addWidget(top_bar)
         
         # Header section
         header_frame = self._create_header()
@@ -50,6 +57,97 @@ class HomeWindow(QWidget):
         
         # Apply modern styling
         self._apply_modern_styling()
+    
+    def _create_top_bar(self):
+        """Create the top bar with API key management button."""
+        frame = QFrame()
+        frame.setStyleSheet("""
+            QFrame {
+                background-color: transparent;
+                border: none;
+            }
+        """)
+        
+        layout = QHBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        
+        # Left spacer
+        layout.addItem(QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
+        
+        # API Key Status and Button
+        api_status_layout = QHBoxLayout()
+        api_status_layout.setSpacing(10)
+        
+        # API Key Status Indicator
+        self.api_status_label = QLabel()
+        self.api_status_label.setFont(QFont("Segoe UI", 9))
+        self._update_api_status()
+        api_status_layout.addWidget(self.api_status_label)
+        
+        # API Key Management Button
+        self.api_key_btn = QPushButton("🔑 API Key")
+        self.api_key_btn.setFont(QFont("Segoe UI", 9))
+        self.api_key_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #3498DB;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                padding: 8px 16px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #2980B9;
+            }
+            QPushButton:pressed {
+                background-color: #21618C;
+            }
+        """)
+        self.api_key_btn.clicked.connect(self.manage_api_key)
+        api_status_layout.addWidget(self.api_key_btn)
+        
+        layout.addLayout(api_status_layout)
+        
+        frame.setLayout(layout)
+        return frame
+    
+    def _update_api_status(self):
+        """Update the API key status indicator."""
+        has_key = self.config_manager.has_api_key()
+        if has_key:
+            self.api_status_label.setText("✅ API Key: Configured")
+            self.api_status_label.setStyleSheet("color: #27AE60; font-weight: bold;")
+        else:
+            self.api_status_label.setText("⚠️ API Key: Not Set")
+            self.api_status_label.setStyleSheet("color: #E74C3C; font-weight: bold;")
+    
+    def manage_api_key(self):
+        """Open API key management dialog."""
+        api_dialog = APIKeyDialog(self)
+        
+        def on_api_key_saved(api_key):
+            if api_key:
+                self.config_manager.set_api_key(api_key)
+                # Set environment variable for immediate use
+                import os
+                os.environ['GOOGLE_API_KEY'] = api_key
+                QMessageBox.information(
+                    self, 
+                    "API Key Updated", 
+                    "API key has been saved successfully!\nYou can now use all AI features."
+                )
+            else:
+                # User skipped, but mark setup as completed
+                self.config_manager.mark_setup_completed()
+                QMessageBox.information(
+                    self,
+                    "Setup Complete",
+                    "Setup completed without API key.\nYou can add it later using this button."
+                )
+            self._update_api_status()
+                
+        api_dialog.api_key_saved.connect(on_api_key_saved)
+        api_dialog.exec_()
     
     def _create_header(self):
         """Create the header section with title and description."""

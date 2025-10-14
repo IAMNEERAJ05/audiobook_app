@@ -21,7 +21,7 @@ def main():
     
     if not config_manager.is_setup_completed():
         # Show API key setup dialog
-        api_dialog = APIKeyDialog()
+        api_dialog = APIKeyDialog(is_first_run=True)
         
         def on_api_key_saved(api_key):
             if api_key:

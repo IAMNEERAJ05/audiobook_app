@@ -16,9 +16,15 @@ class APIKeyDialog(QDialog):
     
     api_key_saved = pyqtSignal(str)  # Signal emitted when API key is saved
     
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, is_first_run=False):
         super().__init__(parent)
-        self.setWindowTitle("Audiobook Generator - API Setup")
+        self.is_first_run = is_first_run
+        
+        if is_first_run:
+            self.setWindowTitle("Audiobook Generator - Welcome & API Setup")
+        else:
+            self.setWindowTitle("Audiobook Generator - API Key Management")
+            
         self.setModal(True)
         self.setFixedSize(500, 300)
         self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.Dialog)
@@ -39,7 +45,12 @@ class APIKeyDialog(QDialog):
         layout.setContentsMargins(30, 30, 30, 30)
         
         # Title
-        title_label = QLabel("Welcome to Audiobook Generator!")
+        if self.is_first_run:
+            title_text = "Welcome to Audiobook Generator!"
+        else:
+            title_text = "Manage Your API Key"
+            
+        title_label = QLabel(title_text)
         title_font = QFont()
         title_font.setPointSize(16)
         title_font.setBold(True)
@@ -48,10 +59,18 @@ class APIKeyDialog(QDialog):
         layout.addWidget(title_label)
         
         # Description
-        desc_label = QLabel(
-            "To use AI-powered summarization, you need a Google Gemini API key.\n"
-            "This is required only once and will be stored securely on your device."
-        )
+        if self.is_first_run:
+            desc_text = (
+                "To use AI-powered summarization, you need a Google Gemini API key.\n"
+                "This is required only once and will be stored securely on your device."
+            )
+        else:
+            desc_text = (
+                "Update your Google Gemini API key to continue using AI features.\n"
+                "Your current key will be replaced with the new one."
+            )
+            
+        desc_label = QLabel(desc_text)
         desc_label.setWordWrap(True)
         desc_label.setAlignment(Qt.AlignCenter)
         desc_label.setStyleSheet("color: #666; margin: 10px 0;")
@@ -100,22 +119,30 @@ class APIKeyDialog(QDialog):
         button_layout = QHBoxLayout()
         button_layout.addStretch()
         
-        self.skip_button = QPushButton("Skip (Limited Features)")
-        self.skip_button.setStyleSheet("""
-            QPushButton {
-                padding: 10px 20px;
-                background-color: #f0f0f0;
-                border: 1px solid #ccc;
-                border-radius: 5px;
-                font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: #e0e0e0;
-            }
-        """)
-        self.skip_button.clicked.connect(self.skip_setup)
+        # Only show skip button on first run
+        if self.is_first_run:
+            self.skip_button = QPushButton("Skip (Limited Features)")
+            self.skip_button.setStyleSheet("""
+                QPushButton {
+                    padding: 10px 20px;
+                    background-color: #f0f0f0;
+                    border: 1px solid #ccc;
+                    border-radius: 5px;
+                    font-weight: bold;
+                }
+                QPushButton:hover {
+                    background-color: #e0e0e0;
+                }
+            """)
+            self.skip_button.clicked.connect(self.skip_setup)
+            button_layout.addWidget(self.skip_button)
         
-        self.save_button = QPushButton("Save & Continue")
+        if self.is_first_run:
+            save_text = "Save & Continue"
+        else:
+            save_text = "Update API Key"
+            
+        self.save_button = QPushButton(save_text)
         self.save_button.setStyleSheet("""
             QPushButton {
                 padding: 10px 20px;
@@ -134,7 +161,6 @@ class APIKeyDialog(QDialog):
         """)
         self.save_button.clicked.connect(self.save_api_key)
         
-        button_layout.addWidget(self.skip_button)
         button_layout.addWidget(self.save_button)
         layout.addLayout(button_layout)
         

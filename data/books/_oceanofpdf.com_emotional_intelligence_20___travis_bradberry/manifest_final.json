@@ -1,0 +1,64 @@
+{
+  "book_id": "_oceanofpdf.com_emotional_intelligence_20___travis_bradberry",
+  "title": "Emotional Intelligence 2.0",
+  "author": "Travis Bradberry and Jean Greaves",
+  "page_count": 213,
+  "chapters": [
+    {
+      "index": 0,
+      "title": "Praise",
+      "start_page": 6,
+      "end_page": 10,
+      "summary_path": "chapters/chapter_006.json",
+      "audio_path": "audio/chapter_006.wav"
+    },
+    {
+      "index": 1,
+      "title": "Dedication",
+      "start_page": 13,
+      "end_page": 13,
+      "summary_path": "chapters/chapter_013.json",
+      "audio_path": "audio/chapter_013.wav"
+    },
+    {
+      "index": 2,
+      "title": "CONTRIBUTORS",
+      "start_page": 14,
+      "end_page": 14,
+      "summary_path": "chapters/chapter_014.json",
+      "audio_path": "audio/chapter_014.wav"
+    },
+    {
+      "index": 3,
+      "title": "Foreword",
+      "start_page": 15,
+      "end_page": 16,
+      "summary_path": "chapters/chapter_015.json",
+      "audio_path": "audio/chapter_015.wav"
+    },
+    {
+      "index": 4,
+      "title": "Chapter 1 - THE JOURNEY",
+      "start_page": 17,
+      "end_page": 24,
+      "summary_path": "chapters/chapter_017.json",
+      "audio_path": "audio/chapter_017.wav"
+    },
+    {
+      "index": 5,
+      "title": "Chapter 2 - THE BIG PICTURE",
+      "start_page": 25,
+      "end_page": 31,
+      "summary_path": "chapters/chapter_025.json",
+      "audio_path": "audio/chapter_025.wav"
+    },
+    {
+      "index": 6,
+      "title": "Chapter 3 - WHAT EMOTIONAL INTELLIGENCE LOOKS LIKE: UNDERSTANDING THE FOUR SKILLS",
+      "start_page": 32,
+      "end_page": 50,
+      "summary_path": "chapters/chapter_032.json",
+      "audio_path": "audio/chapter_032.wav"
+    }
+  ]
+}
