@@ -1,0 +1,9 @@
+google-generativeai
+PyMuPDF
+python-dotenv
+tqdm
+difflib
+pyttsx3
+soundfile
+numpy
+pydub
