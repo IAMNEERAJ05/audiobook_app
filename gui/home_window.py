@@ -8,8 +8,8 @@ from PyQt5.QtGui import QFont, QPixmap, QPalette, QLinearGradient, QPainter
 import sys
 
 # Import windows
-from gui.processing_window import ProcessingWindow
-from gui.library_window import LibraryWindow
+from gui.processing_window_new import ProcessingWindow
+from gui.library_window_new import LibraryWindow
 from gui.api_key_dialog import APIKeyDialog
 
 # Import modern components
@@ -309,12 +309,13 @@ class HomeWindow(QWidget):
         pdf_path, _ = QFileDialog.getOpenFileName(self, "Select PDF Book", "", "PDF Files (*.pdf)")
         if not pdf_path:
             return
-        QMessageBox.information(self, "Upload", f"Book selected: {pdf_path}")
-        try:
-            self.processing_window = ProcessingWindow(pdf_path)
-        except TypeError:
-            self.processing_window = ProcessingWindow()
+        
+        # Create processing window with the selected PDF
+        self.processing_window = ProcessingWindow(pdf_path, parent=self)
         self.processing_window.show()
+        
+        # Hide the home window while processing
+        self.hide()
 
     def open_library(self):
         self.library_window = LibraryWindow()

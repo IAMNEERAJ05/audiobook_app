@@ -32,6 +32,7 @@ ENV/
 .idea/
 *.swp
 *.swo
+.cursorignore
 
 # OS
 .DS_Store
@@ -40,8 +41,9 @@ Thumbs.db
 # Environment variables
 .env
 
-# Database files (optional - you might want to include these)
-# *.db
+# Database files
+*.db
+data/*.db
 
 # Audio files (these can be very large)
 *.wav
@@ -49,11 +51,16 @@ Thumbs.db
 *.m4a
 *.flac
 
-# Executable files (too large for GitHub)
+# Executable files and build artifacts
 *.exe
+*.spec
 dist/
 build/
-installer/*.exe
+installer/
+build_exe.py
+build.bat
+version_info.py
+version_info.txt
 
 # Logs
 *.log
@@ -61,3 +68,11 @@ installer/*.exe
 # Temporary files
 *.tmp
 *.temp
+
+# Backup and unused files
+backup_*/
+"not used previous file"/
+not used previous file/
+
+# Cleanup scripts (optional)
+cleanup_all_books.py
